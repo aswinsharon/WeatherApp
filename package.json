@@ -1,0 +1,46 @@
+{
+  "name": "weather-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/main/index.js",
+  "scripts": {
+    "clean": "rimraf build:*",
+    "tsc": "tsc",
+    "dev": "npm run build && node build/main/index.js",
+    "build": "npm-run-all clean && run-p build:* && copyfiles -u 1 build/main",
+    "deploy": "npm run build && serverless deploy",
+    "build:main": "tsc -p tsconfig.json",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^6.0.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.6.1",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.0.1",
+    "request": "^2.88.2",
+    "rimraf": "^5.0.1",
+    "serverless": "^3.35.2",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.6",
+    "@types/node": "^20.6.0",
+    "@types/supertest": "^2.0.15",
+    "copyfiles": "^2.4.1",
+    "jest": "^29.7.0",
+    "npm-run-all": "^4.1.5",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": "18.17.1"
+  }
+}
