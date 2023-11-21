@@ -66,7 +66,7 @@ app.get("/weatherData", async (req: Request, res: Response) => {
     };
     res.json(weatherApiResponse);
     await mogodb_database.insertIntoMongoDbDatabase(weatherObj);
-    await mysql_database.insertIntoSql(weatherObj);
+    await mysql_database.handleDataUpdation(weatherObj);
     console.log(weatherApiResponse);
   } else if (weatherApiResponse.cod == 404) {
     res.json(weatherApiResponse);

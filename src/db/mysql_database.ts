@@ -6,8 +6,10 @@ import mysql, {
   ProcedureCallPacket,
 } from "mysql2";
 import { Queries } from "../sql_queries";
+import { WeatherType } from "../Types/types";
 
 let max_attempt: number = 0;
+
 const db = mysql.createConnection({
   host: process.env.SQL_HOST,
   user: process.env.SQL_USER,
@@ -18,13 +20,34 @@ const db = mysql.createConnection({
 async function establishConnection() {
   db.connect((err: QueryError | null) => {
     if (err) {
-      console.log("Error connecting to MySQL:" + err);
+      console.log("Error connecting to MySQL:");
     } else {
       console.log("Connected to MySQL database");
     }
   });
 }
-async function insertIntoSql(weather_data: any) {
+async function handleDataUpdation(weather_data: WeatherType) {
+  const findDataQuery: string = Queries.FIND_DATA_QUERY;
+  try {
+    db.query(
+      findDataQuery,
+      async function (error: QueryError | null, result: []) {
+        if (error) {
+          console.log("error", error);
+        } else {
+          if (result.length > 0) {
+            await updateWeather(weather_data);
+          } else {
+            await insertIntoSql(weather_data);
+          }
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function insertIntoSql(weather_data: WeatherType) {
   try {
     const InsertQuery: string = Queries.INSERT_QUERY;
     const destructured_weather_data_array = [
@@ -138,7 +161,52 @@ async function createSchema() {
     }
   });
 }
+async function updateWeather(weather_data: WeatherType) {
+  try {
+    const updateQuery: string = Queries.UPDATE_DATA_QUERY;
+    const destructured_weather_data_array = [
+      weather_data.City,
+      weather_data.Current_Time,
+      weather_data.Temperature,
+      weather_data.Feels_like,
+      weather_data.Maximum_Temperature,
+      weather_data.Minimum_Temperature,
+    ];
+    db.query(
+      updateQuery,
+      destructured_weather_data_array,
+      async function (
+        error: QueryError | null,
+        result:
+          | OkPacket
+          | RowDataPacket[]
+          | ResultSetHeader[]
+          | RowDataPacket[][]
+          | OkPacket[]
+          | ProcedureCallPacket
+      ) {
+        if (error) {
+          max_attempt++;
+          if (max_attempt > 3) {
+            console.log("error in connecting to database, closing connection");
+            db.end();
+            return;
+          }
+          console.error(
+            `failed to update the data, retrying for ${max_attempt}, response from db ${error}`
+          );
+          await updateWeather(weather_data);
+        } else {
+          console.log("successfully inserted to database ", result);
+        }
+      }
+    );
+  } catch (error) {
+    console.log("something went wrong");
+  }
+}
 export default {
+  handleDataUpdation,
   insertIntoSql,
   establishConnection,
   getLastSearchCity,
