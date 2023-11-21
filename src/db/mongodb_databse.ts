@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-// import { parentPort, workerData } from "worker_threads";
+
 const uri: string | undefined = process.env.MONGO_CLIENT_URI;
 
 const client = new MongoClient(uri!);

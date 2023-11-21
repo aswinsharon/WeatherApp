@@ -1,6 +1,5 @@
 import configData from "../config";
 import request from "request";
-import connection from "../db/mongodb_databse";
 
 const weatherData = async (city): Promise<object> => {
   const url =
@@ -8,7 +7,6 @@ const weatherData = async (city): Promise<object> => {
     city +
     configData.weatherConfig.Unit +
     configData.weatherConfig.KEY;
-  await connection.establishConnection();
   return await new Promise(function (resolve, reject) {
     request(
       { url, json: true },
