@@ -31,13 +31,20 @@ async function handleDataUpdation(weather_data: WeatherType) {
   try {
     db.query(
       findDataQuery,
+      [weather_data.City],
       async function (error: QueryError | null, result: []) {
         if (error) {
           console.log("error", error);
         } else {
           if (result.length > 0) {
+            console.log(
+              "the weather data entry already present, updating details"
+            );
             await updateWeather(weather_data);
           } else {
+            console.log(
+              "the weather data entry doesn't exist, making new entry"
+            );
             await insertIntoSql(weather_data);
           }
         }

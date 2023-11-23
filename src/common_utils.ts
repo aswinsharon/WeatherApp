@@ -1,4 +1,4 @@
-async function cityDateTime(timezone) {
+async function cityDateTime(timezone: any) {
   let dateObj: any;
   let localTime: any;
   let localOffset: any;
